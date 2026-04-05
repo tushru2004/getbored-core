@@ -1,0 +1,63 @@
+{
+    "systemAllowedSuffixes": {
+        "Apple": [
+            "apple.com",
+            "icloud.com",
+            "icloud-content.com",
+            "cdn-apple.com",
+            "mzstatic.com",
+            "apple-cloudkit.com",
+            "aaplimg.com"
+        ],
+        "Certificates": [
+            "entrust.net",
+            "digicert.com"
+        ],
+        "AI Tools": [
+            "anthropic.com",
+            "claude.ai",
+            "claude.com",
+            "openai.com",
+            "oaiusercontent.com",
+            "oaistatic.com"
+        ],
+        "Google": [
+            "googleapis.com",
+            "dns.google",
+            "accounts.google.com"
+        ],
+        "CDN": [
+            "cloudflare.com"
+        ],
+        "Telemetry": [
+            "sentry.io",
+            "statsig.com"
+        ],
+        "Packages": [
+            "npmjs.org",
+            "npmjs.com"
+        ],
+        "MDM": [
+            "simplemdm.com",
+            "unwiredmdm.com"
+        ],
+        "VPN": [
+            "tailscale.com",
+            "tailscale.io"
+        ],
+        "Voice": [
+            "superwhisper.com",
+            "argmaxinc.com"
+        ],
+        "Password Manager": [
+            "lastpass.com"
+        ],
+        "Models": [
+            "huggingface.co",
+            "hf.co"
+        ],
+        "NTP": [
+            "ubuntu.com"
+        ]
+    }
+}
