@@ -1,5 +1,12 @@
 import Foundation
 
+struct PolicySnapshot {
+    var siteRules: [SiteRule] = []
+    var filterMode: String = "blockSpecific"
+    var exceptions: [String] = []
+    var allowedAppBundleIDs: [String] = []
+}
+
 /// Pure policy-decision helpers shared by native filters and browser integrations.
 ///
 /// `DecisionCore` does not read app state, UserDefaults, Network Extension config,
