@@ -19,6 +19,15 @@ struct PolicySnapshot {
 /// - rule `github.com` matches `https://www.github.com/tushru2004/GetBored`
 /// - rule `github.com` does not match `github.com.evil.example`
 enum DecisionCore {
+    static func matchesAllowedApp(_ bundleID: String, in snapshot: PolicySnapshot) -> Bool {
+        let normalizedBundleID = bundleID.lowercased()
+
+        return snapshot.allowedAppBundleIDs.contains { stored in
+            let allowed = stored.lowercased()
+            return normalizedBundleID == allowed || normalizedBundleID.hasSuffix("." + allowed)
+        }
+    }
+
     static func matchesException(_ url: String, in snapshot: PolicySnapshot) -> Bool {
         let normalizedURL = normalizeURLPrefix(url)
 
