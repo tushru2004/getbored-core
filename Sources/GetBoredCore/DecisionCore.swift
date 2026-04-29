@@ -19,6 +19,20 @@ struct PolicySnapshot {
 /// - rule `github.com` matches `https://www.github.com/tushru2004/GetBored`
 /// - rule `github.com` does not match `github.com.evil.example`
 enum DecisionCore {
+    static func isExcepted(_ url: String, in snapshot: PolicySnapshot) -> Bool {
+        let normalizedURL = normalizeURLPrefix(url)
+
+        return snapshot.exceptions.contains { exception in
+            let pattern = normalizeURLPrefix(exception)
+            guard !pattern.isEmpty else { return false }
+
+            return normalizedURL == pattern
+                || normalizedURL.hasPrefix(pattern + "/")
+                || normalizedURL.hasPrefix(pattern + "?")
+                || normalizedURL.hasPrefix(pattern + "#")
+        }
+    }
+
     static func isListed(_ url: String, in snapshot: PolicySnapshot) -> Bool {
         snapshot.siteRules.contains { rule in
             host(url, matchesRule: rule.url)
@@ -50,6 +64,19 @@ enum DecisionCore {
         }
         if let question = value.firstIndex(of: "?") {
             value = String(value[..<question])
+        }
+
+        return value
+    }
+
+    private static func normalizeURLPrefix(_ input: String) -> String {
+        var value = input.lowercased()
+
+        if let range = value.range(of: "://") {
+            value = String(value[range.upperBound...])
+        }
+        if value.hasPrefix("www.") {
+            value = String(value.dropFirst(4))
         }
 
         return value
