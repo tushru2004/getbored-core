@@ -36,7 +36,7 @@ enum DecisionCore {
         }
     }
 
-    static func isListed(_ url: String, in snapshot: PolicySnapshot) -> Bool {
+    static func matchesSiteRule(_ url: String, in snapshot: PolicySnapshot) -> Bool {
         snapshot.siteRules.contains { rule in
             host(url, matchesRule: rule.url)
         }
