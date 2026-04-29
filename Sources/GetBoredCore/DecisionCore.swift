@@ -26,6 +26,9 @@ enum DecisionCore {
             let pattern = normalizeURLPrefix(exception)
             guard !pattern.isEmpty else { return false }
 
+            // Exceptions are path prefixes, but only across real URL boundaries.
+            // `github.com/project` matches `github.com/project/issues`, not
+            // `github.com/projectEvil`.
             return normalizedURL == pattern
                 || normalizedURL.hasPrefix(pattern + "/")
                 || normalizedURL.hasPrefix(pattern + "?")
@@ -72,6 +75,8 @@ enum DecisionCore {
     private static func normalizeURLPrefix(_ input: String) -> String {
         var value = input.lowercased()
 
+        // Exception entries and browser URLs may differ by scheme or common
+        // `www.` prefix; normalize those before applying boundary matching.
         if let range = value.range(of: "://") {
             value = String(value[range.upperBound...])
         }
