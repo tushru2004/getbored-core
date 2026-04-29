@@ -19,6 +19,12 @@ struct PolicySnapshot {
 /// - rule `github.com` matches `https://www.github.com/tushru2004/GetBored`
 /// - rule `github.com` does not match `github.com.evil.example`
 enum DecisionCore {
+    static func isListed(_ url: String, in snapshot: PolicySnapshot) -> Bool {
+        snapshot.siteRules.contains { rule in
+            host(url, matchesRule: rule.url)
+        }
+    }
+
     static func host(_ host: String, matchesRule rule: String) -> Bool {
         let normalizedHost = normalizeHost(host)
         let normalizedRule = normalizeHost(rule)
