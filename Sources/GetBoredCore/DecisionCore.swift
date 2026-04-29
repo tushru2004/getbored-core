@@ -24,13 +24,13 @@ enum DecisionCore {
             return false
         }
 
-        let listed = matchesSiteRule(url, in: snapshot)
+        let matchedSiteRule = matchesSiteRule(url, in: snapshot)
 
         switch snapshot.filterMode {
         case "whiteList":
-            return !listed
+            return !matchedSiteRule
         default:
-            return listed
+            return matchedSiteRule
         }
     }
 
@@ -62,12 +62,12 @@ enum DecisionCore {
 
     static func matchesSiteRule(_ url: String, in snapshot: PolicySnapshot) -> Bool {
         snapshot.siteRules.contains { rule in
-            host(url, matchesRule: rule.url)
+            matchesHostRule(url, rule: rule.url)
         }
     }
 
-    static func host(_ host: String, matchesRule rule: String) -> Bool {
-        let normalizedHost = normalizeHost(host)
+    static func matchesHostRule(_ hostOrURL: String, rule: String) -> Bool {
+        let normalizedHost = normalizeHost(hostOrURL)
         let normalizedRule = normalizeHost(rule)
 
         guard !normalizedHost.isEmpty, !normalizedRule.isEmpty else {
