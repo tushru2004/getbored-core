@@ -19,7 +19,7 @@ struct PolicySnapshot {
 /// - rule `github.com` matches `https://www.github.com/tushru2004/GetBored`
 /// - rule `github.com` does not match `github.com.evil.example`
 enum DecisionCore {
-    static func isExcepted(_ url: String, in snapshot: PolicySnapshot) -> Bool {
+    static func matchesException(_ url: String, in snapshot: PolicySnapshot) -> Bool {
         let normalizedURL = normalizeURLPrefix(url)
 
         return snapshot.exceptions.contains { exception in
