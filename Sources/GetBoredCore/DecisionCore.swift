@@ -1,5 +1,16 @@
 import Foundation
 
+/// Pure policy-decision helpers shared by native filters and browser integrations.
+///
+/// `DecisionCore` does not read app state, UserDefaults, Network Extension config,
+/// or browser APIs. Callers pass already-loaded policy data in, and this type
+/// answers deterministic matching questions.
+///
+/// Example domain rule behavior:
+/// - rule `github.com` matches `github.com`
+/// - rule `github.com` matches `www.github.com`
+/// - rule `github.com` matches `https://www.github.com/tushru2004/GetBored`
+/// - rule `github.com` does not match `github.com.evil.example`
 enum DecisionCore {
     static func host(_ host: String, matchesRule rule: String) -> Bool {
         let normalizedHost = normalizeHost(host)
