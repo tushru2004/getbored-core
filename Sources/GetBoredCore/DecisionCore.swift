@@ -2,7 +2,7 @@ import Foundation
 
 struct PolicySnapshot {
     var siteRules: [SiteRule] = []
-    var filterMode: String = "blockSpecific"
+    var filterMode: FilterMode = .blockSpecific
     var exceptions: [String] = []
     var allowedAppBundleIDs: [String] = []
 }
@@ -27,9 +27,9 @@ enum DecisionCore {
         let matchedSiteRule = matchesSiteRule(url, in: snapshot)
 
         switch snapshot.filterMode {
-        case "whiteList":
+        case .whiteList:
             return !matchedSiteRule
-        default:
+        case .blockSpecific:
             return matchedSiteRule
         }
     }
