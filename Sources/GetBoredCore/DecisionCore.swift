@@ -1,8 +1,13 @@
 import Foundation
 
-struct PolicySnapshot {
+/// Rules already loaded from platform-specific storage.
+///
+/// macOS may load these from Network Extension vendor config, iOS may load
+/// them from app-group defaults, and browser extensions may load them from a
+/// native messaging response. `DecisionCore` only sees this normalized value.
+struct LoadedFilterRules {
     var siteRules: [SiteRule] = []
-    var filterMode: String = "blockSpecific"
+    var filterMode: FilterMode = .blockSpecific
     var exceptions: [String] = []
     var allowedAppBundleIDs: [String] = []
 }
@@ -19,34 +24,34 @@ struct PolicySnapshot {
 /// - rule `github.com` matches `https://www.github.com/tushru2004/GetBored`
 /// - rule `github.com` does not match `github.com.evil.example`
 enum DecisionCore {
-    static func shouldBlock(_ url: String, in snapshot: PolicySnapshot) -> Bool {
-        if matchesException(url, in: snapshot) {
+    static func shouldBlock(_ url: String, using loadedFilterRules: LoadedFilterRules) -> Bool {
+        if matchesException(url, using: loadedFilterRules) {
             return false
         }
 
-        let matchedSiteRule = matchesSiteRule(url, in: snapshot)
+        let matchedSiteRule = matchesSiteRule(url, using: loadedFilterRules)
 
-        switch snapshot.filterMode {
-        case "whiteList":
+        switch loadedFilterRules.filterMode {
+        case .whiteList:
             return !matchedSiteRule
-        default:
+        case .blockSpecific:
             return matchedSiteRule
         }
     }
 
-    static func matchesAllowedApp(_ bundleID: String, in snapshot: PolicySnapshot) -> Bool {
+    static func matchesAllowedApp(_ bundleID: String, using loadedFilterRules: LoadedFilterRules) -> Bool {
         let normalizedBundleID = bundleID.lowercased()
 
-        return snapshot.allowedAppBundleIDs.contains { stored in
+        return loadedFilterRules.allowedAppBundleIDs.contains { stored in
             let allowed = stored.lowercased()
             return normalizedBundleID == allowed || normalizedBundleID.hasSuffix("." + allowed)
         }
     }
 
-    static func matchesException(_ url: String, in snapshot: PolicySnapshot) -> Bool {
+    static func matchesException(_ url: String, using loadedFilterRules: LoadedFilterRules) -> Bool {
         let normalizedURL = normalizeURLPrefix(url)
 
-        return snapshot.exceptions.contains { exception in
+        return loadedFilterRules.exceptions.contains { exception in
             let pattern = normalizeURLPrefix(exception)
             guard !pattern.isEmpty else { return false }
 
@@ -60,8 +65,8 @@ enum DecisionCore {
         }
     }
 
-    static func matchesSiteRule(_ url: String, in snapshot: PolicySnapshot) -> Bool {
-        snapshot.siteRules.contains { rule in
+    static func matchesSiteRule(_ url: String, using loadedFilterRules: LoadedFilterRules) -> Bool {
+        loadedFilterRules.siteRules.contains { rule in
             matchesHostRule(url, rule: rule.url)
         }
     }
