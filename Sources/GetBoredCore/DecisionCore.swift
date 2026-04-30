@@ -24,14 +24,14 @@ struct LoadedFilterRules {
 /// - rule `github.com` matches `https://www.github.com/tushru2004/GetBored`
 /// - rule `github.com` does not match `github.com.evil.example`
 enum DecisionCore {
-    static func shouldBlock(_ url: String, using loadedRules: LoadedFilterRules) -> Bool {
-        if matchesException(url, using: loadedRules) {
+    static func shouldBlock(_ url: String, using loadedFilterRules: LoadedFilterRules) -> Bool {
+        if matchesException(url, using: loadedFilterRules) {
             return false
         }
 
-        let matchedSiteRule = matchesSiteRule(url, using: loadedRules)
+        let matchedSiteRule = matchesSiteRule(url, using: loadedFilterRules)
 
-        switch loadedRules.filterMode {
+        switch loadedFilterRules.filterMode {
         case .whiteList:
             return !matchedSiteRule
         case .blockSpecific:
@@ -39,19 +39,19 @@ enum DecisionCore {
         }
     }
 
-    static func matchesAllowedApp(_ bundleID: String, using loadedRules: LoadedFilterRules) -> Bool {
+    static func matchesAllowedApp(_ bundleID: String, using loadedFilterRules: LoadedFilterRules) -> Bool {
         let normalizedBundleID = bundleID.lowercased()
 
-        return loadedRules.allowedAppBundleIDs.contains { stored in
+        return loadedFilterRules.allowedAppBundleIDs.contains { stored in
             let allowed = stored.lowercased()
             return normalizedBundleID == allowed || normalizedBundleID.hasSuffix("." + allowed)
         }
     }
 
-    static func matchesException(_ url: String, using loadedRules: LoadedFilterRules) -> Bool {
+    static func matchesException(_ url: String, using loadedFilterRules: LoadedFilterRules) -> Bool {
         let normalizedURL = normalizeURLPrefix(url)
 
-        return loadedRules.exceptions.contains { exception in
+        return loadedFilterRules.exceptions.contains { exception in
             let pattern = normalizeURLPrefix(exception)
             guard !pattern.isEmpty else { return false }
 
@@ -65,8 +65,8 @@ enum DecisionCore {
         }
     }
 
-    static func matchesSiteRule(_ url: String, using loadedRules: LoadedFilterRules) -> Bool {
-        loadedRules.siteRules.contains { rule in
+    static func matchesSiteRule(_ url: String, using loadedFilterRules: LoadedFilterRules) -> Bool {
+        loadedFilterRules.siteRules.contains { rule in
             matchesHostRule(url, rule: rule.url)
         }
     }
