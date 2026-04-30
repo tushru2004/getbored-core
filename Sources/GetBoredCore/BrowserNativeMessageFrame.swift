@@ -6,16 +6,16 @@ import Foundation
 /// - The Chrome extension initiates by sending a framed JSON message.
 /// - The native host executable receives that frame and decodes it here.
 /// - The native host executable encodes the response here before replying.
-enum BrowserNativeMessageFrame {
-    enum FrameError: Error, Equatable {
+public enum BrowserNativeMessageFrame {
+    public enum FrameError: Error, Equatable {
         case missingLengthPrefix
         case lengthMismatch(expected: UInt32, actual: Int)
         case messageTooLarge(Int)
     }
 
-    static let maximumMessageSize = 1_048_576
+    public static let maximumMessageSize = 1_048_576
 
-    static func decode(_ framedData: Data) throws -> Data {
+    public static func decode(_ framedData: Data) throws -> Data {
         guard framedData.count >= 4 else {
             throw FrameError.missingLengthPrefix
         }
@@ -32,7 +32,7 @@ enum BrowserNativeMessageFrame {
         return Data(body)
     }
 
-    static func encode(_ messageData: Data) throws -> Data {
+    public static func encode(_ messageData: Data) throws -> Data {
         guard messageData.count <= maximumMessageSize else {
             throw FrameError.messageTooLarge(messageData.count)
         }

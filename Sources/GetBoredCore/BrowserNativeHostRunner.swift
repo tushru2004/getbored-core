@@ -5,8 +5,8 @@ import Foundation
 /// Chrome native messaging adds process framing around stdin/stdout. This type
 /// handles only the policy part: decode the request JSON, load the snapshot
 /// file, run the decision engine, and encode the response JSON.
-enum BrowserNativeHostRunner {
-    static func handleRequest(
+public enum BrowserNativeHostRunner {
+    public static func handleRequest(
         requestData: Data,
         snapshotURL: URL,
         decoder: JSONDecoder = JSONDecoder(),
