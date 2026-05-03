@@ -9,6 +9,11 @@
 
 import Foundation
 
+/// Read-only browser policy emitted by the macOS app and consumed by native hosts.
+///
+/// Example:
+/// `BrowserPolicySnapshot(policyVersion: "12-abcd", mode: "blockSpecific", siteRules: [BrowserSiteRule(url: "youtube.com")])`
+/// blocks `youtube.com` and allows unknown hosts.
 public struct BrowserPolicySnapshot: Codable, Equatable {
     public var policyVersion: String
     public var mode: String
@@ -16,6 +21,11 @@ public struct BrowserPolicySnapshot: Codable, Equatable {
     public var exceptions: [String]
     public var supportDomains: [String: [String]]
 
+    /// Creates a policy snapshot with optional exceptions and support domains.
+    ///
+    /// Example:
+    /// `BrowserPolicySnapshot(policyVersion: "v1", mode: "whiteList", siteRules: [BrowserSiteRule(url: "docker.com")])`
+    /// allows Docker and related support domains while blocking unknown sites.
     public init(
         policyVersion: String,
         mode: String,
@@ -31,22 +41,37 @@ public struct BrowserPolicySnapshot: Codable, Equatable {
     }
 }
 
+/// A single site rule from the GetBored allow/block list.
+///
+/// Example:
+/// `BrowserSiteRule(url: "https://www.youtube.com", title: "YouTube")` matches
+/// both `youtube.com` and `m.youtube.com`.
 public struct BrowserSiteRule: Codable, Equatable {
     public var url: String
     public var title: String?
 
+    /// Creates a site rule from a host or URL string.
+    ///
+    /// Example: `BrowserSiteRule(url: "github.com")`.
     public init(url: String, title: String? = nil) {
         self.url = url
         self.title = title
     }
 }
 
+/// A browser navigation decision request.
+///
+/// Example:
+/// `BrowserDecisionRequest(url: "https://youtube.com/", browser: "chrome", requestType: "main_frame")`.
 public struct BrowserDecisionRequest: Codable, Equatable {
     public var url: String
     public var topLevelUrl: String?
     public var browser: String?
     public var requestType: String?
 
+    /// Creates a request for one URL decision.
+    ///
+    /// Example: pass `topLevelUrl` equal to `url` for top-level navigations.
     public init(
         url: String,
         topLevelUrl: String? = nil,
@@ -60,6 +85,10 @@ public struct BrowserDecisionRequest: Codable, Equatable {
     }
 }
 
+/// The rule evaluator verdict returned to the browser extension.
+///
+/// Example:
+/// `BrowserDecision(blocked: true, reason: "In blocklist", source: "site_rule", matchedRule: "youtube.com", policyVersion: "12-abcd")`.
 public struct BrowserDecision: Codable, Equatable {
     public var blocked: Bool
     public var reason: String
@@ -67,6 +96,10 @@ public struct BrowserDecision: Codable, Equatable {
     public var matchedRule: String?
     public var policyVersion: String
 
+    /// Creates an allow/block verdict with optional matched rule context.
+    ///
+    /// Example: use `matchedRule: nil` for default allow/block decisions where
+    /// no explicit rule matched.
     public init(
         blocked: Bool,
         reason: String,
@@ -82,6 +115,11 @@ public struct BrowserDecision: Codable, Equatable {
     }
 }
 
+/// Shared rule evaluator for browser extensions and native hosts.
+///
+/// Example:
+/// `BrowserDecisionCore.decide(request: BrowserDecisionRequest(url: "https://youtube.com/"), policy: policy)`
+/// returns `blocked == true` when `policy.mode == "blockSpecific"` and `youtube.com` is listed.
 public enum BrowserDecisionCore {
     public static let blockSpecificMode = "blockSpecific"
     public static let whiteListMode = "whiteList"
@@ -99,6 +137,12 @@ public enum BrowserDecisionCore {
         ],
     ]
 
+    /// Evaluates one browser URL against the current policy snapshot.
+    ///
+    /// Examples:
+    /// - `blockSpecific` + listed `youtube.com` -> blocked.
+    /// - `blockSpecific` + unlisted `example.com` -> allowed.
+    /// - `whiteList` + unlisted `example.com` -> blocked.
     public static func decide(
         request: BrowserDecisionRequest,
         policy: BrowserPolicySnapshot
@@ -178,6 +222,10 @@ public enum BrowserDecisionCore {
         )
     }
 
+    /// Extracts a comparable host from a host or URL string.
+    ///
+    /// Example: `extractDomain(from: "https://www.youtube.com/watch?v=1")`
+    /// returns `"youtube.com"`.
     public static func extractDomain(from input: String) -> String {
         var str = input.trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -202,6 +250,10 @@ public enum BrowserDecisionCore {
         return str
     }
 
+    /// Returns true when a full URL starts with one of the saved exception prefixes.
+    ///
+    /// Example: exception `"youtube.com/watch?v=study"` matches
+    /// `"https://youtube.com/watch?v=study123"`.
     public static func isExcepted(fullURL: String, exceptions: [String]) -> Bool {
         guard !exceptions.isEmpty else { return false }
         let normalized = normalizeURLPrefix(fullURL)
@@ -210,6 +262,9 @@ public enum BrowserDecisionCore {
         }
     }
 
+    /// Finds the first rule matching a host exactly or by subdomain.
+    ///
+    /// Example: host `"m.youtube.com"` matches rule `"youtube.com"`.
     public static func matchingRule(
         for host: String,
         in rules: [BrowserSiteRule]
@@ -221,6 +276,10 @@ public enum BrowserDecisionCore {
         }
     }
 
+    /// Finds an allowed site rule that permits a related support/CDN host.
+    ///
+    /// Example: with `docker.com` allowed, `www.google.com` can be allowed for
+    /// reCAPTCHA because `google.com` is in Docker's support-domain list.
     public static func relatedAllowedRule(
         for host: String,
         policy: BrowserPolicySnapshot
@@ -243,6 +302,9 @@ public enum BrowserDecisionCore {
         }
     }
 
+    /// Normalizes URL prefixes before exception matching.
+    ///
+    /// Example: `"https://www.YouTube.com/watch"` becomes `"youtube.com/watch"`.
     private static func normalizeURLPrefix(_ input: String) -> String {
         var normalized = input.lowercased()
         if let schemeRange = normalized.range(of: "://") {
@@ -254,6 +316,9 @@ public enum BrowserDecisionCore {
         return normalized
     }
 
+    /// Maps variant allowed domains to the canonical support-domain key.
+    ///
+    /// Example: `"www.docker.com"` and `"docs.docker.com"` both become `"docker.com"`.
     private static func canonicalAllowedDomain(from input: String) -> String {
         let host = extractDomain(from: input).lowercased()
         if host == "www.docker.com" || host.hasSuffix(".docker.com") {
@@ -262,6 +327,9 @@ public enum BrowserDecisionCore {
         return host
     }
 
+    /// Extracts a second-level-domain keyword for loose related-domain matching.
+    ///
+    /// Example: `"docs.docker.com"` returns `"docker"`; `"x.io"` returns `nil`.
     private static func baseKeyword(from domain: String) -> String? {
         let parts = domain.lowercased().split(separator: ".")
         guard parts.count >= 2 else { return nil }
