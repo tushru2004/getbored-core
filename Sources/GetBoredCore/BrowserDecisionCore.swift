@@ -117,6 +117,13 @@ public struct BrowserDecision: Codable, Equatable {
 
 /// Shared rule evaluator for browser extensions and native hosts.
 ///
+/// Call chain:
+/// Chrome `webNavigation.onBeforeNavigate`
+/// -> `decideNavigation(details)` in `background.js`
+/// -> Chrome native messaging
+/// -> `GetBoredDecisionHost.handle(_:)`
+/// -> `BrowserDecisionCore.decide(request:policy:)`.
+///
 /// Example:
 /// `BrowserDecisionCore.decide(request: BrowserDecisionRequest(url: "https://youtube.com/"), policy: policy)`
 /// returns `blocked == true` when `policy.mode == "blockSpecific"` and `youtube.com` is listed.
@@ -138,6 +145,14 @@ public enum BrowserDecisionCore {
     ]
 
     /// Evaluates one browser URL against the current policy snapshot.
+    ///
+    /// Call chain:
+    /// `GetBoredDecisionHost.handle(_:)`
+    /// -> `decide(request:policy:)`
+    /// -> `extractDomain(from:)`
+    /// -> `isExcepted(fullURL:exceptions:)`
+    /// -> `matchingRule(for:in:)` / `relatedAllowedRule(for:policy:)`
+    /// -> returns `BrowserDecision` to the native host.
     ///
     /// Examples:
     /// - `blockSpecific` + listed `youtube.com` -> blocked.
@@ -224,6 +239,9 @@ public enum BrowserDecisionCore {
 
     /// Extracts a comparable host from a host or URL string.
     ///
+    /// Called by: `decide(request:policy:)`, `matchingRule(for:in:)`,
+    /// `canonicalAllowedDomain(from:)`.
+    ///
     /// Example: `extractDomain(from: "https://www.youtube.com/watch?v=1")`
     /// returns `"youtube.com"`.
     public static func extractDomain(from input: String) -> String {
@@ -252,6 +270,8 @@ public enum BrowserDecisionCore {
 
     /// Returns true when a full URL starts with one of the saved exception prefixes.
     ///
+    /// Called by: `decide(request:policy:)`.
+    ///
     /// Example: exception `"youtube.com/watch?v=study"` matches
     /// `"https://youtube.com/watch?v=study123"`.
     public static func isExcepted(fullURL: String, exceptions: [String]) -> Bool {
@@ -263,6 +283,9 @@ public enum BrowserDecisionCore {
     }
 
     /// Finds the first rule matching a host exactly or by subdomain.
+    ///
+    /// Called by: `decide(request:policy:)`.
+    /// Calls: `extractDomain(from:)` for each saved rule.
     ///
     /// Example: host `"m.youtube.com"` matches rule `"youtube.com"`.
     public static func matchingRule(
@@ -277,6 +300,9 @@ public enum BrowserDecisionCore {
     }
 
     /// Finds an allowed site rule that permits a related support/CDN host.
+    ///
+    /// Called by: `decide(request:policy:)` in `whiteList` mode.
+    /// Calls: `canonicalAllowedDomain(from:)` and `baseKeyword(from:)`.
     ///
     /// Example: with `docker.com` allowed, `www.google.com` can be allowed for
     /// reCAPTCHA because `google.com` is in Docker's support-domain list.
@@ -304,6 +330,8 @@ public enum BrowserDecisionCore {
 
     /// Normalizes URL prefixes before exception matching.
     ///
+    /// Called by: `isExcepted(fullURL:exceptions:)`.
+    ///
     /// Example: `"https://www.YouTube.com/watch"` becomes `"youtube.com/watch"`.
     private static func normalizeURLPrefix(_ input: String) -> String {
         var normalized = input.lowercased()
@@ -318,6 +346,9 @@ public enum BrowserDecisionCore {
 
     /// Maps variant allowed domains to the canonical support-domain key.
     ///
+    /// Called by: `relatedAllowedRule(for:policy:)`.
+    /// Calls: `extractDomain(from:)`.
+    ///
     /// Example: `"www.docker.com"` and `"docs.docker.com"` both become `"docker.com"`.
     private static func canonicalAllowedDomain(from input: String) -> String {
         let host = extractDomain(from: input).lowercased()
@@ -328,6 +359,8 @@ public enum BrowserDecisionCore {
     }
 
     /// Extracts a second-level-domain keyword for loose related-domain matching.
+    ///
+    /// Called by: `relatedAllowedRule(for:policy:)`.
     ///
     /// Example: `"docs.docker.com"` returns `"docker"`; `"x.io"` returns `nil`.
     private static func baseKeyword(from domain: String) -> String? {
