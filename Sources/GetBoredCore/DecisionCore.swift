@@ -5,7 +5,7 @@ import Foundation
 /// macOS may load these from Network Extension vendor config, iOS may load
 /// them from app-group defaults, and browser extensions may load them from a
 /// native messaging response. `DecisionCore` only sees this normalized value.
-struct LoadedFilterRules {
+struct LoadedFilterRules: Codable {
     var siteRules: [SiteRule] = []
     var filterMode: FilterMode = .blockSpecific
     var exceptions: [String] = []

@@ -18,10 +18,12 @@ struct BrowserFilterDecisionRequest: Codable, Equatable {
 struct BrowserFilterDecisionResponse: Codable, Equatable {
     var shouldBlock: Bool
     var reason: String
+    var policyVersion: String?
 
-    init(shouldBlock: Bool, reason: String) {
+    init(shouldBlock: Bool, reason: String, policyVersion: String? = nil) {
         self.shouldBlock = shouldBlock
         self.reason = reason
+        self.policyVersion = policyVersion
     }
 }
 
