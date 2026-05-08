@@ -22,6 +22,24 @@ struct SafariParentChildContextStore {
         let age: TimeInterval
     }
 
+    struct ParentChildMap: Codable, Equatable {
+        struct Rule: Codable, Equatable {
+            let p: String
+            let c: [String]
+        }
+
+        struct Wildcard: Codable, Equatable {
+            let p: String
+            let c: String
+        }
+
+        let schemaVersion: Int
+        let version: String?
+        let publishedAt: String?
+        let rules: [Rule]
+        let wildcards: [Wildcard]?
+    }
+
     static let appGroupIdentifier = "group.com.getbored.ios"
 
     static let legacyLastMessageKey = "safari_extension_spike_last_message"
@@ -34,6 +52,7 @@ struct SafariParentChildContextStore {
 
     static let activeContextDataKey = "safari_parent_child_active_context_v1"
     static let flowObservationDataKey = "safari_parent_child_flow_observation_v1"
+    static let parentChildMapKey = "parent_child_map_v1"
 
     private let defaults: UserDefaults?
     private let encoder = JSONEncoder()
@@ -122,9 +141,45 @@ struct SafariParentChildContextStore {
 
     func mergedChildren(for parentDomain: String) -> Set<String> {
         guard let parent = Self.normalizedHost(parentDomain) else { return [] }
-        let active = loadActiveContext()
-        var children = Set(active?.parentDomain == parent ? active?.childDomains ?? [] : [])
-        children.formUnion(registryChildren(for: parent))
+        if let staticChildren = parentChildMapChildren(for: parent), !staticChildren.isEmpty {
+            return staticChildren
+        }
+
+        return dynamicChildren(for: parent)
+    }
+
+    func saveParentChildMapJSON(_ json: String) -> Bool {
+        guard let defaults,
+              let data = json.data(using: .utf8),
+              (try? decoder.decode(ParentChildMap.self, from: data)) != nil else {
+            return false
+        }
+        defaults.set(json, forKey: Self.parentChildMapKey)
+        defaults.synchronize()
+        return true
+    }
+
+    func parentChildMapChildren(for parentDomain: String) -> Set<String>? {
+        guard let parent = Self.normalizedHost(parentDomain),
+              let map = loadParentChildMap() else {
+            return nil
+        }
+
+        var children = Set<String>()
+        for rule in map.rules {
+            guard Self.host(parent, matchesDomain: rule.p) else { continue }
+            children.formUnion(rule.c.compactMap(Self.normalizedChildPattern).filter { !$0.isEmpty })
+        }
+
+        for wildcard in map.wildcards ?? [] {
+            guard Self.host(parent, matchesDomain: wildcard.p),
+                  let child = Self.normalizedChildPattern(wildcard.c),
+                  !child.isEmpty else {
+                continue
+            }
+            children.insert(child)
+        }
+
         return children
     }
 
@@ -163,7 +218,7 @@ struct SafariParentChildContextStore {
 
         guard let active = loadActiveContext(),
               active.parentDomain == observation.parentDomain,
-              mergedChildren(for: active.parentDomain).contains(where: { Self.host(host, matchesDomain: $0) }) else {
+              mergedChildren(for: active.parentDomain).contains(where: { Self.host(host, matchesChildPattern: $0) }) else {
             return nil
         }
 
@@ -196,9 +251,44 @@ struct SafariParentChildContextStore {
         return normalizedRequestHost == normalizedDomain || normalizedRequestHost.hasSuffix("." + normalizedDomain)
     }
 
+    static func host(_ requestHost: String, matchesChildPattern childPattern: String) -> Bool {
+        guard let normalizedRequestHost = normalizedHost(requestHost),
+              let normalizedPattern = normalizedChildPattern(childPattern),
+              !normalizedRequestHost.isEmpty,
+              !normalizedPattern.isEmpty else {
+            return false
+        }
+
+        if normalizedPattern.hasPrefix("*.") {
+            let suffix = String(normalizedPattern.dropFirst(2))
+            return normalizedRequestHost == suffix || normalizedRequestHost.hasSuffix("." + suffix)
+        }
+
+        return Self.host(normalizedRequestHost, matchesDomain: normalizedPattern)
+    }
+
     private func loadFlowObservation() -> FlowObservation? {
         guard let data = defaults?.data(forKey: Self.flowObservationDataKey) else { return nil }
         return try? decoder.decode(FlowObservation.self, from: data)
+    }
+
+    private func loadParentChildMap() -> ParentChildMap? {
+        if let data = defaults?.data(forKey: Self.parentChildMapKey) {
+            return try? decoder.decode(ParentChildMap.self, from: data)
+        }
+        if let json = defaults?.string(forKey: Self.parentChildMapKey),
+           let data = json.data(using: .utf8) {
+            return try? decoder.decode(ParentChildMap.self, from: data)
+        }
+        return nil
+    }
+
+    private func dynamicChildren(for parentDomain: String) -> Set<String> {
+        guard let parent = Self.normalizedHost(parentDomain) else { return [] }
+        let active = loadActiveContext()
+        var children = Set(active?.parentDomain == parent ? active?.childDomains ?? [] : [])
+        children.formUnion(registryChildren(for: parent))
+        return children
     }
 
     private func registryChildren(for parentDomain: String) -> Set<String> {
@@ -239,5 +329,18 @@ struct SafariParentChildContextStore {
             "source": "safari-extension",
             "receivedAt": ISO8601DateFormatter().string(from: context.receivedAt)
         ]
+    }
+
+    private static func normalizedChildPattern(_ value: String?) -> String? {
+        let trimmed = value?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased()
+            .trimmingCharacters(in: CharacterSet(charactersIn: "."))
+        guard let trimmed, !trimmed.isEmpty else { return nil }
+        if trimmed.hasPrefix("*.") {
+            let suffix = String(trimmed.dropFirst(2)).trimmingCharacters(in: CharacterSet(charactersIn: "."))
+            return suffix.isEmpty ? nil : "*." + suffix
+        }
+        return trimmed
     }
 }
