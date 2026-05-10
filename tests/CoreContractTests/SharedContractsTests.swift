@@ -81,6 +81,17 @@ final class SharedContractsTests: XCTestCase {
         XCTAssertEqual(GetBoredIdentifiers.CloudKit.Field.parentChildMapJSON, "parent_child_map_v1")
     }
 
+    func testFilterModeRawValueContractMatchesPersistedWireValues() throws {
+        XCTAssertEqual(FilterMode.blockSpecific.rawValue, "blockSpecific")
+        XCTAssertEqual(FilterMode.whiteList.rawValue, "whiteList")
+        XCTAssertEqual(FilterMode.allCases, [.blockSpecific, .whiteList])
+
+        XCTAssertEqual(try JSONDecoder().decode(FilterMode.self, from: Data(#""blockSpecific""#.utf8)), .blockSpecific)
+        XCTAssertEqual(try JSONDecoder().decode(FilterMode.self, from: Data(#""whiteList""#.utf8)), .whiteList)
+        XCTAssertEqual(String(data: try JSONEncoder().encode(FilterMode.blockSpecific), encoding: .utf8), #""blockSpecific""#)
+        XCTAssertEqual(String(data: try JSONEncoder().encode(FilterMode.whiteList), encoding: .utf8), #""whiteList""#)
+    }
+
     func testCloudKitDeviceRegistryEntrySchemaRoundTripsCurrentContractShape() throws {
         let entry = CloudKitDeviceRegistryEntry(
             id: "device-1",
