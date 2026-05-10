@@ -14,7 +14,7 @@ final class SharedIdentifierUsageTests: XCTestCase {
             "Sources/iOS/SafariChildRegistrationExtension/SafariWebExtensionHandler.swift",
             "Sources/Shared/SafariParentChildContextStore.swift",
             "Sources/macOS/App/BlockLogView.swift",
-            "Sources/macOS/App/BrowserPolicySnapshotBridge.swift",
+            "Sources/Browser/Core/BrowserPolicySnapshotBridge.swift",
             "Sources/macOS/App/MacFilterRuleBridge.swift",
             "Sources/macOS/App/ProfileGenerator.swift",
             "Sources/macOS/App/SystemExtensionManager.swift",
