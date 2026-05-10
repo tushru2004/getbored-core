@@ -2,12 +2,12 @@ import Foundation
 
 /// Request shape used by browser integrations when asking native code for a
 /// filtering decision. Chrome will send this to the native messaging host.
-struct BrowserFilterDecisionRequest: Codable, Equatable {
-    var url: String
-    var topLevelURL: String?
-    var tabIdentifier: Int?
+public struct BrowserFilterDecisionRequest: Codable, Equatable {
+    public var url: String
+    public var topLevelURL: String?
+    public var tabIdentifier: Int?
 
-    init(url: String, topLevelURL: String? = nil, tabIdentifier: Int? = nil) {
+    public init(url: String, topLevelURL: String? = nil, tabIdentifier: Int? = nil) {
         self.url = url
         self.topLevelURL = topLevelURL
         self.tabIdentifier = tabIdentifier
@@ -15,12 +15,12 @@ struct BrowserFilterDecisionRequest: Codable, Equatable {
 }
 
 /// Response shape returned to the browser integration.
-struct BrowserFilterDecisionResponse: Codable, Equatable {
-    var shouldBlock: Bool
-    var reason: String
-    var policyVersion: String?
+public struct BrowserFilterDecisionResponse: Codable, Equatable {
+    public var shouldBlock: Bool
+    public var reason: String
+    public var policyVersion: String?
 
-    init(shouldBlock: Bool, reason: String, policyVersion: String? = nil) {
+    public init(shouldBlock: Bool, reason: String, policyVersion: String? = nil) {
         self.shouldBlock = shouldBlock
         self.reason = reason
         self.policyVersion = policyVersion
@@ -28,7 +28,7 @@ struct BrowserFilterDecisionResponse: Codable, Equatable {
 }
 
 extension DecisionCore {
-    static func browserDecision(
+    public static func browserDecision(
         for request: BrowserFilterDecisionRequest,
         using loadedFilterRules: LoadedFilterRules
     ) -> BrowserFilterDecisionResponse {

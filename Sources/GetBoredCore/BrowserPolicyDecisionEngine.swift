@@ -5,12 +5,12 @@ import Foundation
 /// The native messaging host should stay mostly transport code: read one JSON
 /// request from Chrome, load `BrowserPolicySnapshot.json`, call this engine,
 /// and write one JSON response back.
-enum BrowserPolicyDecisionEngine {
-    enum DecisionError: Error, Equatable {
+public enum BrowserPolicyDecisionEngine {
+    public enum DecisionError: Error, Equatable {
         case unsupportedSchemaVersion(Int)
     }
 
-    static func decide(
+    public static func decide(
         request: BrowserFilterDecisionRequest,
         snapshotData: Data,
         decoder: JSONDecoder = JSONDecoder()
@@ -19,7 +19,7 @@ enum BrowserPolicyDecisionEngine {
         return try decide(request: request, snapshot: snapshot)
     }
 
-    static func decide(
+    public static func decide(
         request: BrowserFilterDecisionRequest,
         snapshot: BrowserPolicySnapshot
     ) throws -> BrowserFilterDecisionResponse {

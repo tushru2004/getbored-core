@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Filter Mode
 
-enum FilterMode: String, Codable, CaseIterable {
+public enum FilterMode: String, Codable, CaseIterable {
     case blockSpecific = "blockSpecific"
     case whiteList = "whiteList"
 }

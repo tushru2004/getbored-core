@@ -1,0 +1,5 @@
+{
+  "policyVersion": "fixture-v1",
+  "reason": "Blocked by loaded filter rules",
+  "shouldBlock": true
+}

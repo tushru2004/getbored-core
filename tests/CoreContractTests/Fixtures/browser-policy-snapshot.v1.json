@@ -1,0 +1,22 @@
+{
+  "generatedAtUnixSeconds": 1777000000,
+  "loadedFilterRules": {
+    "allowedAppBundleIDs": [
+      "com.apple.Terminal"
+    ],
+    "exceptions": [
+      "docs.python.org/3"
+    ],
+    "filterMode": "whiteList",
+    "siteRules": [
+      {
+        "id": "11111111-1111-1111-1111-111111111111",
+        "timestamp": 800000000,
+        "title": "GitHub",
+        "url": "github.com"
+      }
+    ]
+  },
+  "policyVersion": "fixture-v1",
+  "schemaVersion": 1
+}

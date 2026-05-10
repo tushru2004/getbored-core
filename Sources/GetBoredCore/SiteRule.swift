@@ -7,13 +7,13 @@
 
 import Foundation
 
-struct SiteRule: Identifiable, Codable {
-    let id: UUID
-    let url: String
-    let title: String
-    let timestamp: Date
+public struct SiteRule: Identifiable, Codable {
+    public let id: UUID
+    public let url: String
+    public let title: String
+    public let timestamp: Date
 
-    init(id: UUID = UUID(), url: String, title: String, timestamp: Date = Date()) {
+    public init(id: UUID = UUID(), url: String, title: String, timestamp: Date = Date()) {
         self.id = id
         self.url = url
         self.title = title
