@@ -194,4 +194,34 @@ final class SharedContractsTests: XCTestCase {
 
         XCTAssertEqual(updated, [newEntry, otherEntry])
     }
+
+    func testSystemAllowListMatchesSuffixCorrectly() {
+        XCTAssertTrue(
+            SystemAllowList.isSystemAllowed("foo.apple.com", suffixes: ["apple.com"]),
+            "subdomain of listed suffix should be allowed"
+        )
+        XCTAssertFalse(
+            SystemAllowList.isSystemAllowed("notapple.com", suffixes: ["apple.com"]),
+            "unrelated domain should not be allowed"
+        )
+        XCTAssertTrue(
+            SystemAllowList.isSystemAllowed("apple.com", suffixes: ["apple.com"]),
+            "exact match of listed suffix should be allowed"
+        )
+        XCTAssertFalse(
+            SystemAllowList.isSystemAllowed("apple.com", suffixes: []),
+            "any host against empty suffix list should not be allowed"
+        )
+    }
+
+    func testSystemAllowListFallbackContainsAppleAndDigicert() {
+        XCTAssertTrue(
+            SystemAllowList.fallbackSuffixes.contains("apple.com"),
+            "fallback must contain apple.com"
+        )
+        XCTAssertTrue(
+            SystemAllowList.fallbackSuffixes.contains("digicert.com"),
+            "fallback must contain digicert.com"
+        )
+    }
 }
