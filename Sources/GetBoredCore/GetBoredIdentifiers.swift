@@ -91,6 +91,30 @@ public enum GetBoredIdentifiers {
         public static let parentChildMapKey = "parent_child_map_v1"
     }
 
+    /// Reverse-DNS prefix shared by all GetBored bundle identifiers.
+    /// Use this for runtime `contains`/`hasPrefix` checks instead of
+    /// duplicating the literal string.
+    public static let bundlePrefix = "com.getbored."
+
+    /// `DispatchQueue` labels. Centralised here so the lint test can
+    /// enforce that no call site uses a raw `"com.getbored.*"` label.
+    public enum Queue {
+        /// Serialises `MacRuleStore._rulesDict` mutations.
+        public static let macRules = "com.getbored.macos.filter.rules"
+
+        /// Serialises `MacActivityLogger` batch writes.
+        public static let macActivityLogger = "com.getbored.macos.filter.activitylogger"
+
+        /// Serialises `MacFilterDataProvider.trackedFlows` mutations.
+        public static let macFlowTracking = "com.getbored.macos.filter.tracking"
+
+        /// Serialises `SafariAppProxyProvider` relay dict + NWConnection mutations.
+        public static let iosSafariConnections = "com.getbored.ios.safari-app-proxy.connections"
+
+        /// Serialises `IOSActivityLogger` batch writes.
+        public static let iosActivityLogger = "com.getbored.activitylogger"
+    }
+
     /// Darwin notification names used for immediate cross-process cache refresh.
     public enum DarwinNotification {
         public static let iOSFilterConfigChanged = "com.getbored.filter.configChanged"

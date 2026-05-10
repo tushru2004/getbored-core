@@ -34,6 +34,7 @@ final class SharedIdentifierUsageTests: XCTestCase {
             #"CFNotificationName\("com\.getbored\.filter\."#,
             #"appendingPathComponent\(\s*"Library/Group Containers/group\.com\.getbored\."#,
             #"parentChildMapKey\s*=\s*"parent_child_map_v1""#,
+            #"DispatchQueue\(label:\s*"com\.getbored\."#,
         ]
 
         for path in paths {
