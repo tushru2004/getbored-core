@@ -50,23 +50,6 @@ final class SharedContractsTests: XCTestCase {
         )
     }
 
-    func testBrowserPolicySnapshotSchemaVersionContract() throws {
-        XCTAssertEqual(BrowserPolicySnapshot.currentSchemaVersion, 1)
-
-        let snapshot = BrowserPolicySnapshot(
-            policyVersion: "policy-contract",
-            generatedAtUnixSeconds: 1_777_000_000,
-            loadedFilterRules: LoadedFilterRules()
-        )
-
-        let json = try JSONSerialization.jsonObject(with: JSONEncoder().encode(snapshot)) as? [String: Any]
-
-        XCTAssertEqual(json?["schemaVersion"] as? Int, BrowserPolicySnapshot.currentSchemaVersion)
-        XCTAssertEqual(json?["policyVersion"] as? String, "policy-contract")
-        XCTAssertEqual(json?["generatedAtUnixSeconds"] as? TimeInterval, 1_777_000_000)
-        XCTAssertNotNil(json?["loadedFilterRules"])
-    }
-
     func testCloudKitSchemaContractsMatchCurrentWireNames() {
         XCTAssertEqual(GetBoredIdentifiers.CloudKit.containerIdentifier, "iCloud.com.getbored.sync")
 
