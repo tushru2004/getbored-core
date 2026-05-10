@@ -40,7 +40,7 @@ struct SafariParentChildContextStore {
         let wildcards: [Wildcard]?
     }
 
-    static let appGroupIdentifier = "group.com.getbored.ios"
+    static let appGroupIdentifier = GetBoredIdentifiers.AppGroup.ios
 
     static let legacyLastMessageKey = "safari_extension_spike_last_message"
     static let legacyLastMessageDateKey = "safari_extension_spike_last_message_at"
