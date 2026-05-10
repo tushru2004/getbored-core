@@ -52,7 +52,7 @@ struct SafariParentChildContextStore {
 
     static let activeContextDataKey = "safari_parent_child_active_context_v1"
     static let flowObservationDataKey = "safari_parent_child_flow_observation_v1"
-    static let parentChildMapKey = "parent_child_map_v1"
+    static let parentChildMapKey = GetBoredIdentifiers.SafariParentChild.parentChildMapKey
 
     private let defaults: UserDefaults?
     private let encoder = JSONEncoder()

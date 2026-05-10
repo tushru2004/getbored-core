@@ -8,84 +8,108 @@ import Foundation
 /// and in the matching `.entitlements`, `Info.plist`, and provisioning
 /// profiles in lockstep. Consumers must reference these constants instead of
 /// duplicating the literal string.
-enum GetBoredIdentifiers {
+public enum GetBoredIdentifiers {
 
     /// App-group container identifiers used by `UserDefaults(suiteName:)` and
     /// `NSFileManager.containerURL(forSecurityApplicationGroupIdentifier:)`.
-    enum AppGroup {
+    public enum AppGroup {
         /// Primary iOS shared container. Backs filter rules, allowlist, parent
         /// /child Safari context, and last-sync state.
-        static let ios = "group.com.getbored.ios"
+        public static let ios = "group.com.getbored.ios"
 
         /// Legacy iOS container that pre-dates `ios` and still backs the
         /// in-app whitelist and location-block records. Keep referenced
         /// explicitly so it is not confused with `ios`.
-        static let iosAdvanceWhitelist = "group.com.getbored.advance.whitelist"
+        public static let iosAdvanceWhitelist = "group.com.getbored.advance.whitelist"
 
         /// Primary macOS shared container. Backs MacFilter rule store and
         /// `BrowserPolicySnapshot.json` consumed by the Chrome native host.
-        static let macOSFilter = "group.com.getbored.macos.filter"
+        public static let macOSFilter = "group.com.getbored.macos.filter"
     }
 
     /// Bundle identifiers for apps and Network/Safari extensions. These appear
     /// in entitlements, code-signing identities, and profile/MDM payloads.
-    enum Bundle {
+    public enum Bundle {
         /// iOS app bundle.
-        static let iOSApp = "com.getbored.filter"
+        public static let iOSApp = "com.getbored.filter"
 
         /// iOS Network Extension data provider.
-        static let iOSFilterDataProvider = "com.getbored.filter.extension"
+        public static let iOSFilterDataProvider = "com.getbored.filter.extension"
 
         /// iOS Network Extension control provider.
-        static let iOSFilterControlProvider = "com.getbored.filter.control"
+        public static let iOSFilterControlProvider = "com.getbored.filter.control"
 
         /// macOS app bundle.
-        static let macOSApp = "com.getbored.macos"
+        public static let macOSApp = "com.getbored.macos"
 
         /// macOS iOS-admin companion bundle.
-        static let macOSIOSAdmin = "com.getbored.macos.iosadmin"
+        public static let macOSIOSAdmin = "com.getbored.macos.iosadmin"
 
         /// Mac system network filter extension.
-        static let macFilter = "com.getbored.macos.filter"
+        public static let macFilter = "com.getbored.macos.filter"
 
         /// iOS Safari App Proxy extension.
-        static let iosSafariAppProxy = "com.getbored.filter.safari-app-proxy-provider"
+        public static let iosSafariAppProxy = "com.getbored.filter.safari-app-proxy-provider"
 
         /// iOS Safari child-domain registration web extension.
-        static let iosSafariChildRegistration = "com.getbored.filter.safarichildregistration"
+        public static let iosSafariChildRegistration = "com.getbored.filter.safarichildregistration"
     }
 
     /// `os_log`/`OSLog` subsystem names. Used for `log show --predicate
     /// 'subsystem == "..."'` queries; rename here breaks log dashboards and
     /// support runbooks.
-    enum Logging {
-        static let macOSApp = "com.getbored.macos"
-        static let macFilter = "com.getbored.macos.filter"
-        static let iosSafariAppProxy = "com.getbored.ios.safari-app-proxy"
-        static let iosSafariChildRegistration = "com.getbored.ios.safari-child-registration"
+    public enum Logging {
+        public static let macOSApp = "com.getbored.macos"
+        public static let macFilter = "com.getbored.macos.filter"
+        public static let iOS = "com.getbored.ios"
+        public static let iOSFilterApp = "com.getbored.filter"
+        public static let iosSafariAppProxy = "com.getbored.ios.safari-app-proxy"
+        public static let iosSafariChildRegistration = "com.getbored.ios.safari-child-registration"
     }
 
     /// MDM / mobileconfig payload identifiers.
-    enum Profile {
-        static let advancePayload = "com.getbored.advance.profile"
+    public enum Profile {
+        public static let webFilterPayload = "com.getbored.advance.webfilter"
+        public static let restrictionsPayload = "com.getbored.advance.restrictions"
+        public static let removalPasswordPayload = "com.getbored.advance.removalpassword"
+        public static let advancePayload = "com.getbored.advance.profile"
     }
 
     /// Native-messaging host name used by the Chrome/Brave extension and the
     /// macOS `ChromeNativeHost` binary.
-    enum NativeMessaging {
-        static let chromeHostName = "com.getbored.chrome_native_host"
+    public enum NativeMessaging {
+        public static let chromeHostName = "com.getbored.chrome_native_host"
+    }
+
+    /// Browser policy snapshot shared between the macOS app and native host.
+    public enum BrowserPolicySnapshot {
+        public static let fileName = "BrowserPolicySnapshot.json"
+    }
+
+    /// Shared keys for Safari parent-child context and map exchange.
+    public enum SafariParentChild {
+        public static let parentChildMapKey = "parent_child_map_v1"
+    }
+
+    /// Darwin notification names used for immediate cross-process cache refresh.
+    public enum DarwinNotification {
+        public static let iOSFilterConfigChanged = "com.getbored.filter.configChanged"
+        public static let iOSLocationEntriesChanged = "com.getbored.filter.locationEntriesChanged"
     }
 
     /// CloudKit record types and field names. The macOS app writes these and
     /// the iOS app reads them; keeping the strings in one place prevents
     /// silent field drift across devices.
-    enum CloudKit {
+    public enum CloudKit {
+        /// Private CloudKit container shared by the macOS app, iOS app, and
+        /// iOS filter providers.
+        public static let containerIdentifier = "iCloud.com.getbored.sync"
 
         /// Record type names used in `CKRecord(recordType:...)`.
-        enum RecordType {
-            static let filterConfig = "FilterConfig"
-            static let deviceRegistry = "DeviceRegistry"
-            static let whitelistConfig = "WhitelistConfig"
+        public enum RecordType {
+            public static let filterConfig = "FilterConfig"
+            public static let deviceRegistry = "DeviceRegistry"
+            public static let whitelistConfig = "WhitelistConfig"
         }
 
         /// Record-name templates used to construct `CKRecord.ID(recordName:)`.
@@ -94,35 +118,36 @@ enum GetBoredIdentifiers {
         /// switch lives in one place. `perDeviceFilterConfig` is the
         /// per-device record; `sharedFilterConfig` is the cross-device
         /// fallback record.
-        enum RecordName {
-            static func perDeviceFilterConfigDebug(deviceID: String) -> String {
+        public enum RecordName {
+            public static func perDeviceFilterConfigDebug(deviceID: String) -> String {
                 "FilterConfig-\(deviceID)-debug"
             }
 
-            static func perDeviceFilterConfigProduction(deviceID: String) -> String {
+            public static func perDeviceFilterConfigProduction(deviceID: String) -> String {
                 "FilterConfig-\(deviceID)-Production"
             }
 
-            static let sharedFilterConfigDebug = "FilterConfig-debug"
-            static let sharedFilterConfigProduction = "FilterConfig-Production"
+            public static let sharedFilterConfigDebug = "FilterConfig-debug"
+            public static let sharedFilterConfigProduction = "FilterConfig-Production"
 
-            static let deviceRegistryDebug = "DeviceRegistry-debug"
-            static let deviceRegistryProduction = "DeviceRegistry-Production"
+            public static let deviceRegistryDebug = "DeviceRegistry-debug"
+            public static let deviceRegistryProduction = "DeviceRegistry-Production"
         }
 
         /// Field keys used as `record["..."]` subscripts on `CKRecord`.
         ///
         /// Adding a field here is cheap; renaming one is a breaking change
         /// for any device that already wrote the old name.
-        enum Field {
-            static let urls = "urls"
-            static let mode = "mode"
-            static let exceptions = "exceptions"
-            static let updatedAt = "updatedAt"
-            static let filterListsJSON = "filterListsJSON"
-            static let allowedApps = "allowedApps"
-            static let activityLogJSON = "activityLogJSON"
-            static let devicesJSON = "devicesJSON"
+        public enum Field {
+            public static let urls = "urls"
+            public static let mode = "mode"
+            public static let exceptions = "exceptions"
+            public static let updatedAt = "updatedAt"
+            public static let filterListsJSON = "filterListsJSON"
+            public static let allowedApps = "allowedApps"
+            public static let activityLogJSON = "activityLogJSON"
+            public static let devicesJSON = "devicesJSON"
+            public static let parentChildMapJSON = GetBoredIdentifiers.SafariParentChild.parentChildMapKey
         }
     }
 }
