@@ -20,6 +20,36 @@ final class SharedContractsTests: XCTestCase {
         XCTAssertEqual(decoded.timestamp, original.timestamp)
     }
 
+    func testFilterListCodableRoundTrip() throws {
+        let original = FilterList(
+            id: UUID(uuidString: "DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDDDD")!,
+            name: "Home Rules",
+            description: "Blocks social media at home",
+            entries: ["twitter.com", "facebook.com"],
+            exceptions: ["twitter.com/news"],
+            locations: [],
+            allowedApps: ["com.apple.safari"],
+            isActive: true,
+            createdAt: Date(timeIntervalSinceReferenceDate: 800_000_000),
+            mode: .whiteList,
+            assignedDeviceIds: ["device-abc", "device-xyz"]
+        )
+
+        let encoded = try JSONEncoder().encode(original)
+        let decoded = try JSONDecoder().decode(FilterList.self, from: encoded)
+
+        XCTAssertEqual(decoded.id, original.id)
+        XCTAssertEqual(decoded.name, original.name)
+        XCTAssertEqual(decoded.description, original.description)
+        XCTAssertEqual(decoded.entries, original.entries)
+        XCTAssertEqual(decoded.exceptions, original.exceptions)
+        XCTAssertEqual(decoded.allowedApps, original.allowedApps)
+        XCTAssertEqual(decoded.isActive, original.isActive)
+        XCTAssertEqual(decoded.createdAt, original.createdAt)
+        XCTAssertEqual(decoded.mode, original.mode)
+        XCTAssertEqual(decoded.assignedDeviceIds, original.assignedDeviceIds)
+    }
+
     func testGetBoredIdentifierContractsMatchCurrentProfilesAndTargets() {
         XCTAssertEqual(GetBoredIdentifiers.AppGroup.ios, "group.com.getbored.ios")
         XCTAssertEqual(GetBoredIdentifiers.AppGroup.iosAdvanceWhitelist, "group.com.getbored.advance.whitelist")

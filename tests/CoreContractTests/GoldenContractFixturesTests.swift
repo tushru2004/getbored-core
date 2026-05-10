@@ -15,6 +15,21 @@ final class GoldenContractFixturesTests: XCTestCase {
         try assertJSONObjectsEqual(JSONEncoder().encode(rule), fixtureData)
     }
 
+    func testFilterListV1FixtureDecodesWithDefaultsForMissingOptionalFields() throws {
+        // The fixture is an iOS-shaped FilterList: no `allowedApps`, no `assignedDeviceIds`.
+        // Decoding must succeed and fill both fields with their empty defaults.
+        let fixtureData = try loadFixture("filter-list.v1.json")
+        let list = try JSONDecoder().decode(FilterList.self, from: fixtureData)
+
+        XCTAssertEqual(list.id, UUID(uuidString: "CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"))
+        XCTAssertEqual(list.name, "School Filter")
+        XCTAssertEqual(list.mode, .blockSpecific)
+        XCTAssertTrue(list.isActive)
+        // Both optional-on-wire fields must default to empty rather than throwing.
+        XCTAssertEqual(list.allowedApps, [])
+        XCTAssertEqual(list.assignedDeviceIds, [])
+    }
+
     func testActivityLogEntryV1FixtureMatchesCodableContract() throws {
         let fixtureData = try loadFixture("activity-log-entry.v1.json")
         let entry = try JSONDecoder().decode(ActivityLogEntry.self, from: fixtureData)

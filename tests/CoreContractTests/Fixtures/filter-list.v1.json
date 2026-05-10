@@ -1,0 +1,11 @@
+{
+  "id": "CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCCCC",
+  "name": "School Filter",
+  "description": "Blocks distracting sites during school hours",
+  "entries": ["tiktok.com", "instagram.com"],
+  "exceptions": [],
+  "locations": [],
+  "isActive": true,
+  "createdAt": 800000789,
+  "mode": "blockSpecific"
+}
