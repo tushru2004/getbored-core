@@ -3,6 +3,23 @@ import XCTest
 @testable import GetBoredCore
 
 final class SharedContractsTests: XCTestCase {
+    func testSiteRuleCodableRoundTrip() throws {
+        let original = SiteRule(
+            id: UUID(uuidString: "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA")!,
+            url: "https://www.example.com",
+            title: "Example",
+            timestamp: Date(timeIntervalSinceReferenceDate: 700_000_000)
+        )
+
+        let encoded = try JSONEncoder().encode(original)
+        let decoded = try JSONDecoder().decode(SiteRule.self, from: encoded)
+
+        XCTAssertEqual(decoded.id, original.id)
+        XCTAssertEqual(decoded.url, original.url)
+        XCTAssertEqual(decoded.title, original.title)
+        XCTAssertEqual(decoded.timestamp, original.timestamp)
+    }
+
     func testGetBoredIdentifierContractsMatchCurrentProfilesAndTargets() {
         XCTAssertEqual(GetBoredIdentifiers.AppGroup.ios, "group.com.getbored.ios")
         XCTAssertEqual(GetBoredIdentifiers.AppGroup.iosAdvanceWhitelist, "group.com.getbored.advance.whitelist")

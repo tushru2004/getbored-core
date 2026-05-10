@@ -3,6 +3,18 @@ import XCTest
 @testable import GetBoredCore
 
 final class GoldenContractFixturesTests: XCTestCase {
+    func testSiteRuleV1FixtureMatchesCodableContract() throws {
+        let fixtureData = try loadFixture("site-rule.v1.json")
+        let rule = try JSONDecoder().decode(SiteRule.self, from: fixtureData)
+
+        XCTAssertEqual(rule.id, UUID(uuidString: "11111111-1111-1111-1111-111111111111"))
+        XCTAssertEqual(rule.url, "https://www.youtube.com")
+        XCTAssertEqual(rule.title, "YouTube")
+        XCTAssertEqual(rule.timestamp, Date(timeIntervalSinceReferenceDate: 800_000_456))
+
+        try assertJSONObjectsEqual(JSONEncoder().encode(rule), fixtureData)
+    }
+
     func testActivityLogEntryV1FixtureMatchesCodableContract() throws {
         let fixtureData = try loadFixture("activity-log-entry.v1.json")
         let entry = try JSONDecoder().decode(ActivityLogEntry.self, from: fixtureData)
