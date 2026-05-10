@@ -5,7 +5,7 @@ final class SharedIdentifierUsageTests: XCTestCase {
     func testSwiftCallSitesUseSharedIdentifierConstants() throws {
         let paths = [
             "Sources/iOS/App/ContentView.swift",
-            "Sources/iOS/App/IOSRuleStore.swift",
+            "Sources/iOS/Shared/IOSRuleStore.swift",
             "Sources/iOS/App/LocationBlockingManager.swift",
             "Sources/iOS/App/WhitelistManager.swift",
             "Sources/iOS/iOSFilterControlProvider/FilterControlProvider.swift",
