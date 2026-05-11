@@ -5,7 +5,7 @@ let package = Package(
     name: "GetBoredCore",
     platforms: [
         .macOS(.v14),
-        .iOS(.v17),
+        .iOS(.v14),
     ],
     products: [
         .library(
