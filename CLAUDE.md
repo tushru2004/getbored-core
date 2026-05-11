@@ -15,25 +15,8 @@ Contract changes touch shared types across platforms. Route via these rules:
 
 When a contract change spans both iOS and macOS filters, request an Opus plan first that decomposes work per filter repo.
 
-## Commit message rules
-
-Use **Conventional Commits** format:
-
-```
-type(scope): short description
-
-Refs: tushru2004/GetBored#N
-```
-
-**Types:** `feat`, `fix`, `refactor`, `docs`, `chore`, `test`, `perf`
-
-**Scopes:** `core`, `policy`, `identifiers`, `cloudkit`
-
-**Footer:** Always include `Refs:` or `Fixes:` referencing an issue in the monorepo project.
-
-**Rules:**
-- Never add `Co-Authored-By` lines
-- Only commit when explicitly asked by the user
+## Commit rules
+See `~/.claude/skills/commit-rules/` — invoked at commit time, not loaded every message.
 
 ## Cross-cutting
 
