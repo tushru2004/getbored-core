@@ -1,0 +1,12 @@
+{
+  "blocked": true,
+  "displayDomain": "instagram.com",
+  "domain": "instagram.com",
+  "id": "22222222-2222-2222-2222-222222222222",
+  "isResolvableHostname": true,
+  "rawEndpoint": "157.240.1.35",
+  "reason": "Blocked by blocklist",
+  "resolutionSource": "sni",
+  "sourceApp": "com.apple.mobilesafari",
+  "timestamp": 800000123
+}

@@ -5,11 +5,23 @@ import Foundation
 /// macOS may load these from Network Extension vendor config, iOS may load
 /// them from app-group defaults, and browser extensions may load them from a
 /// native messaging response. `DecisionCore` only sees this normalized value.
-struct LoadedFilterRules: Codable {
-    var siteRules: [SiteRule] = []
-    var filterMode: FilterMode = .blockSpecific
-    var exceptions: [String] = []
-    var allowedAppBundleIDs: [String] = []
+public struct LoadedFilterRules: Codable {
+    public var siteRules: [SiteRule]
+    public var filterMode: FilterMode
+    public var exceptions: [String]
+    public var allowedAppBundleIDs: [String]
+
+    public init(
+        siteRules: [SiteRule] = [],
+        filterMode: FilterMode = .blockSpecific,
+        exceptions: [String] = [],
+        allowedAppBundleIDs: [String] = []
+    ) {
+        self.siteRules = siteRules
+        self.filterMode = filterMode
+        self.exceptions = exceptions
+        self.allowedAppBundleIDs = allowedAppBundleIDs
+    }
 }
 
 /// Pure policy-decision helpers shared by native filters and browser integrations.
@@ -23,8 +35,8 @@ struct LoadedFilterRules: Codable {
 /// - rule `github.com` matches `www.github.com`
 /// - rule `github.com` matches `https://www.github.com/tushru2004/GetBored`
 /// - rule `github.com` does not match `github.com.evil.example`
-enum DecisionCore {
-    static func shouldBlock(_ url: String, using loadedFilterRules: LoadedFilterRules) -> Bool {
+public enum DecisionCore {
+    public static func shouldBlock(_ url: String, using loadedFilterRules: LoadedFilterRules) -> Bool {
         if matchesException(url, using: loadedFilterRules) {
             return false
         }
@@ -39,7 +51,7 @@ enum DecisionCore {
         }
     }
 
-    static func matchesAllowedApp(_ bundleID: String, using loadedFilterRules: LoadedFilterRules) -> Bool {
+    public static func matchesAllowedApp(_ bundleID: String, using loadedFilterRules: LoadedFilterRules) -> Bool {
         let normalizedBundleID = bundleID.lowercased()
 
         return loadedFilterRules.allowedAppBundleIDs.contains { stored in
@@ -48,7 +60,7 @@ enum DecisionCore {
         }
     }
 
-    static func matchesException(_ url: String, using loadedFilterRules: LoadedFilterRules) -> Bool {
+    public static func matchesException(_ url: String, using loadedFilterRules: LoadedFilterRules) -> Bool {
         let normalizedURL = normalizeURLPrefix(url)
 
         return loadedFilterRules.exceptions.contains { exception in
@@ -65,13 +77,13 @@ enum DecisionCore {
         }
     }
 
-    static func matchesSiteRule(_ url: String, using loadedFilterRules: LoadedFilterRules) -> Bool {
+    public static func matchesSiteRule(_ url: String, using loadedFilterRules: LoadedFilterRules) -> Bool {
         loadedFilterRules.siteRules.contains { rule in
             matchesHostRule(url, rule: rule.url)
         }
     }
 
-    static func matchesHostRule(_ hostOrURL: String, rule: String) -> Bool {
+    public static func matchesHostRule(_ hostOrURL: String, rule: String) -> Bool {
         let normalizedHost = normalizeHost(hostOrURL)
         let normalizedRule = normalizeHost(rule)
 

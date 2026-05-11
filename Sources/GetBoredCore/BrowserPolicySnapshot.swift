@@ -4,15 +4,15 @@ import Foundation
 ///
 /// The macOS app writes this to the shared app-group container. Browser native
 /// hosts can read it without depending on Network Extension internals.
-struct BrowserPolicySnapshot: Codable {
-    static let currentSchemaVersion = 1
+public struct BrowserPolicySnapshot: Codable {
+    public static let currentSchemaVersion = 1
 
-    var schemaVersion: Int
-    var policyVersion: String
-    var generatedAtUnixSeconds: TimeInterval
-    var loadedFilterRules: LoadedFilterRules
+    public var schemaVersion: Int
+    public var policyVersion: String
+    public var generatedAtUnixSeconds: TimeInterval
+    public var loadedFilterRules: LoadedFilterRules
 
-    init(
+    public init(
         schemaVersion: Int = Self.currentSchemaVersion,
         policyVersion: String,
         generatedAtUnixSeconds: TimeInterval,
