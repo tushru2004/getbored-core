@@ -23,6 +23,7 @@ xcuserdata/
 
 # SwiftPM
 .build/
+Package.resolved
 
 # Build artifacts
 build/
