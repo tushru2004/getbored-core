@@ -118,6 +118,11 @@ public enum DecisionCore {
 
         // Exception entries and browser URLs may differ by scheme or common
         // `www.` prefix; normalize those before applying boundary matching.
+        // Examples:
+        //   "https://www.github.com/project" → "github.com/project"
+        //   "http://github.com/project"      → "github.com/project"
+        //   "www.github.com/project"         → "github.com/project"
+        //   "github.com/project"             → "github.com/project"
         if let range = value.range(of: "://") {
             value = String(value[range.upperBound...])
         }
