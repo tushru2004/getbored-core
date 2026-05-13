@@ -33,11 +33,11 @@ public enum GetBoredIdentifiers {
         /// iOS app bundle.
         public static let iOSApp = "com.getbored.filter"
 
-        /// iOS Network Extension data provider.
-        public static let iOSFilterDataProvider = "com.getbored.filter.extension"
+        /// iOS Network Extension flow inspector (data provider).
+        public static let iOSFlowInspector = "com.getbored.filter.extension"
 
-        /// iOS Network Extension control provider.
-        public static let iOSFilterControlProvider = "com.getbored.filter.control"
+        /// iOS Network Extension block handler (control provider).
+        public static let iOSBlockHandler = "com.getbored.filter.control"
 
         /// macOS app bundle.
         public static let macOSApp = "com.getbored.macos"

@@ -3,7 +3,7 @@
 //  GetBored Shared
 //
 //  Centralised loader and matcher for the system-allowed allow-list.
-//  Both MacFilter and iOSFilterDataProvider use identical load + match logic;
+//  Both MacFilter and iOSFlowInspector use identical load + match logic;
 //  this type eliminates the duplication.
 //
 //  Usage:

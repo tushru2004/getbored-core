@@ -56,8 +56,8 @@ final class SharedContractsTests: XCTestCase {
         XCTAssertEqual(GetBoredIdentifiers.AppGroup.macOSFilter, "group.com.getbored.macos.filter")
 
         XCTAssertEqual(GetBoredIdentifiers.Bundle.iOSApp, "com.getbored.filter")
-        XCTAssertEqual(GetBoredIdentifiers.Bundle.iOSFilterDataProvider, "com.getbored.filter.extension")
-        XCTAssertEqual(GetBoredIdentifiers.Bundle.iOSFilterControlProvider, "com.getbored.filter.control")
+        XCTAssertEqual(GetBoredIdentifiers.Bundle.iOSFlowInspector, "com.getbored.filter.extension")
+        XCTAssertEqual(GetBoredIdentifiers.Bundle.iOSBlockHandler, "com.getbored.filter.control")
         XCTAssertEqual(GetBoredIdentifiers.Bundle.macOSApp, "com.getbored.macos")
         XCTAssertEqual(GetBoredIdentifiers.Bundle.macOSIOSAdmin, "com.getbored.macos.iosadmin")
         XCTAssertEqual(GetBoredIdentifiers.Bundle.macFilter, "com.getbored.macos.filter")
